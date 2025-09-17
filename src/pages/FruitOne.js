@@ -33,7 +33,7 @@ function App() {
                     </tr>
                     <tr>
                         <td>단가</td>
-                        <td>{fruit.price.toLocaleString()}원</td>
+                        <td>{Number(fruit.price).toLocaleString()}원</td>
                     </tr>
                 </tbody>
             </Table>
