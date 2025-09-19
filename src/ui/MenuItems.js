@@ -10,7 +10,7 @@ function App(props) {
     const navigate = useNavigate();
 
     return(
-        <Navbar bg="dark" variant="dark" expand="lg">
+        <Navbar bg="dark" variant="dark" expand="lg" style={{ marginBottom: "40px" }}>
             <Container>
                 <Navbar.Brand href='/'>{props.appName}</Navbar.Brand>
                 <Nav className="me-auto">
