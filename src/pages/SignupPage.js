@@ -75,7 +75,7 @@ function App() {
                                 값이 true면 Form.Control.Feedback에 빨간 오류 메세지를 보여줌 
                             */}
 
-                            <Form>
+                            <Form onSubmit={SignupAction}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>이름</Form.Label>
                                     <Form.Control 
@@ -84,6 +84,7 @@ function App() {
                                         value={name}
                                         onChange={(event) => {setName(event.target.value)}}
                                         isInvalid={!!errors.name}
+                                        required
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         {errors.name}
@@ -111,6 +112,7 @@ function App() {
                                         value={password}
                                         onChange={(event) => {setPassword(event.target.value)}}
                                         isInvalid={!!errors.password}
+                                        required
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         {errors.password}
@@ -124,12 +126,13 @@ function App() {
                                         value={address}
                                         onChange={(event) => {setAddress(event.target.value)}}
                                         isInvalid={!!errors.address}
+                                        required
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         {errors.address}
                                     </Form.Control.Feedback>
                                 </Form.Group>
-                                <Button variant="primary" type="submit" className="w-100" onClick={SignupAction}>
+                                <Button variant="primary" type="submit" className="w-100">
                                     회원 가입
                                 </Button>
                             </Form>
