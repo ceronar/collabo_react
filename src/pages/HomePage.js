@@ -5,7 +5,7 @@ import { API_BASE_URL } from '../config/config';
 function App() {
     return(
         <Container>
-            <Carousel>
+            <Carousel className='my-4'>
                 <Carousel.Item>
                     <img
                         className="d-block w-100"

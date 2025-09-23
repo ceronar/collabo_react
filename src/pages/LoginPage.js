@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config/config";
 
 function App(props) {
@@ -15,6 +15,13 @@ function App(props) {
     const [errors, setErrors] = useState('');
 
     const navigate = useNavigate();
+
+    const user = JSON.parse(sessionStorage.getItem("user"));
+
+    if (user) {
+        // 이미 로그인 상태 → 홈으로 리다이렉트
+        return <Navigate to="/" replace />;
+    }
 
     const LoginAction = async (event) => { // 로그인과 관련된 이벤트 처리 함수
         event.preventDefault();
