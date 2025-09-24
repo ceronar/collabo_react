@@ -5,6 +5,7 @@ import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
 
 import ProductList from "../pages/ProductList"
+import ProductInsertForm from "../pages/ProductInsertForm"
 
 import FruitOne from "../pages/FruitOne";
 import FruitList from "../pages/FruitList";
@@ -25,6 +26,7 @@ function App(props) {
 
             {/* 로그인 여부에 따라서 상품 목록 페이지가 다르게 보여야 하므로, user props를 넘겨줌 */}
             <Route path='/product/list' element={<ProductList user={props.user} />} />
+            <Route path='/product/insert' element={<ProductInsertForm />} />
 
             <Route path='/fruit' element={<FruitOne />} />
             <Route path='/fruit/list' element={<FruitList />} />

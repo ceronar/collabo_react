@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Button, Card, Col, Container, Modal, Row, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { API_BASE_URL } from "../config/config";
 import axios from "axios";
@@ -45,25 +45,7 @@ function App(props) {
         setSelectedItem(null);
     };
 
-    const handelDelete = async (id, name) => {
-        const isDelete = window.confirm(`'${name}' 상품을 삭제 하시겠습니까?`);
-
-        if(!isDelete) {
-            alert(`'${name}' 상품 삭제를 취소하셨습니다.`);
-            return;
-        }
-        
-        try { // 상품 삭제 후 다시 상품 목록 페이지
-            // 주의) 상품을 삭제하려면 반드시 primary key 인 상품의 아이디를 넘겨주어야 함
-            await axios.delete(`${API_BASE_URL}/product/delete/${id}`);
-            alert(`'${name}' 상품 삭제 되었습니다.`);
-            // state에서 바로 제거 (리렌더링 발생)
-            setProducts((prevProducts) => prevProducts.filter((p) => p.id !== id));
-        } catch (error) {
-            console.log(error);
-            alert(`상품 삭제 실패 : ${error.response?.data || error.message}`);
-        }
-    }
+    const navigate = useNavigate();
 
     // 관리자 모드일 때 뜨는 '수정', '삭제' 버튼을 생성
     const makeAdminButtons = (item) => {
@@ -86,10 +68,26 @@ function App(props) {
                     variant="danger" 
                     className="mb-2" 
                     size="sm"
-                    onClick={(event) => {
+                    onClick={async (event) => {
                         event.stopPropagation();
-                        handelDelete(item.id, item.name)
-                        }}>
+
+                        const isDelete = window.confirm(`'${item.name}' 상품을 삭제 하시겠습니까?`);
+
+                        if(!isDelete) {
+                            alert(`'${item.name}' 상품 삭제를 취소하셨습니다.`);
+                            return;
+                        }
+                        
+                        try { // 상품 삭제 후 다시 상품 목록 페이지
+                            // 주의) 상품을 삭제하려면 반드시 primary key 인 상품의 아이디를 넘겨주어야 함
+                            await axios.delete(`${API_BASE_URL}/product/delete/${item.id}`);
+                            alert(`'${item.name}' 상품 삭제 되었습니다.`);
+                            navigate('/product/list');
+                        } catch (error) {
+                            console.log(error);
+                            alert(`상품 삭제 실패 : ${error.response?.data || error.message}`);
+                        }
+                    }}>
                     삭제
                 </Button>
             </div>
