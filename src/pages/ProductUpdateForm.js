@@ -1,13 +1,31 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { Navigate, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config/config";
+// useParams 혹은 url에 들어있는 동적 파라미터의 값을 챙길때 사용
+import { useParams } from "react-router-dom";
 
 /**
- * 상품 등록이 회원 가입과 다른점 : 파일 업로드
+ * 상품 수정 페이지
+ * 
+ * 상품 등록과 다른점
+ *      기본 키인 상품의 id 정보가 넘어옴
+ *      id를 사용하여 기존에 입력했던 상품에 대한 정보를 미리 보여 주어야 함(useEffect 훅 사용)
+ * 
  * step 01 : 
- * 폼 양식을 만듦
+ * 기존 등록 폼 양식을 복사
+ * 
+ * 기존 상품 정보 읽기
+ *      get방식을 사용하여 해당 상품의 정보를 읽어 온다.
+ * 
+ * 테스트 시나리오
+ *      특정 상품에 대하여 '수정' 버튼을 클릭하면 이전 상품 정보들이 입력란에 보여야함
+ * 
+ * 다음 함수들은 '상품 등록'과 동일함
+ * ControlChange 함수
+ * FileSelect 함수
+ * 
  * ControlChange 함수
  *      각 컨트롤에 대한 change 이벤트 함수 구현
  *      컨트롤(input type) : 이름, 가격, 재고, 상품 설명
@@ -18,6 +36,9 @@ import { API_BASE_URL } from "../config/config";
  *      FileReaderAPI를 사용하여 해당 이미지를 Base64 인코딩 문자열로 변환 작업을 함
  * 
  * SubmitAction 함수
+ *      등록이라는 문구를 모두 '수정' 으로 변경
+ *      'insert' -> 'update/${id}'
+ *      axios.post -> axios.put
  *      컨트롤에 입력된 내용들을 BackEnd로 전송
  * 
  * 파일 업로드 시 유의사항
@@ -25,13 +46,19 @@ import { API_BASE_URL } from "../config/config";
  *      input 양식 type="file"
  * 
  * 테스트 시나리오
- *      이미지 폴더에 "product_" 로 시작하는 이미지 업로드
- *      데이터 베이스에 1행 추가
- *      상품 목록 1페이지의 첫번째 이미지가 올린 이미지
+ *      이미지 폴더에 "product_" 로 시작하는 새로운 이미지 업로드
+ *      데이터 베이스에 이전 행의 정보가 수정
+ *      상품 목록 페이지에 수정된 정보가 출력
+ * 
+ * 미결 사항
+ *      과거에 업로드 했던 이전 이미지즐 삭제하여야 함
  */
 
 function App() {
-    const comment = '상품 등록';
+    const {id} = useParams();
+    console.log(`수정할 상품 번호 : ${id}`);
+
+    const comment = '상품 수정';
     const nevigate = useNavigate();
     const user = JSON.parse(sessionStorage.getItem("user"));
     const initial_value = {
@@ -40,6 +67,22 @@ function App() {
 
     // product는 백엔드에게 넘겨 줄 상품 등록 정보를 담고 있는 객체
     const [product, setProduct] = useState(initial_value);
+    
+
+    // id를 이용하여 기존에 입력한 상품 정보 가져오기
+    useEffect(() => {
+        const url = `${API_BASE_URL}/product/update/${id}`;
+        axios
+            .get(url)
+            .then((response) => {
+                setProduct(response.data);
+            })
+            .catch((error) => {
+                console.log(`상품 ${id}번 오류 발생 : ${error}`);
+                alert('해당 상품 정보를 읽어오지 못했습니다.')
+            });
+    }, [id]);
+
     if (user?.role !== 'ADMIN') {
         // 어드민이 아니면 → 홈으로 리다이렉트
         return <Navigate to="/" replace />;
@@ -83,11 +126,11 @@ function App() {
 
         if(product.category === "-") {
             alert('카테고리를 반드시 선택해 주셔야 합니다.');
-            return; // 등록 중단
+            return; // 수정 중단
         }
 
         try {
-            const url = `${API_BASE_URL}/product/insert`;
+            const url = `${API_BASE_URL}/product/update/${id}`;
             // 얕은 복사 : 두 변수가 같은 메모리 공간을 참조한다
             const parameters = product;
             // 깊은 복사 : 새로운 메모리에 같은 값을 복사한다
@@ -98,23 +141,24 @@ function App() {
             // 예) 'text/html', 'image/jpeg', 'application/json' 등..
             // headers : {'Content-Type' : 'application/json'} : 이 문서는 json 형식의 파일이다
             const config = {headers : {'Content-Type' : 'application/json'}};
+            
+            // put() 메소드는 리소스를 "수정" 하고자 할 때 사용하는 메소드
+            const response = await axios.put(url, parameters, config);
 
-            const response = await axios.post(url, parameters, config);
+            console.log(`상품 수정 : [${response.data}]`);
+            alert('상품이 성공적으로 수정 되었습니다.');
 
-            console.log(`상품 등록 : [${response.data}]`);
-            alert('상품이 성공적으로 등록 되었습니다.');
-
-            // 상품 등록후 입력 컨트롤 모두 초기화
+            // 상품 수정후 입력 컨트롤 모두 초기화
             setProduct(initial_value);
 
-            // 등록이 이루어지고 난 후 상품 목록 페이지로 이동
+            // 수정이 이루어지고 난 후 상품 목록 페이지로 이동
             nevigate('/product/list');
         } catch (error) {
             console.log(error.response?.data); // 서버가 반환한 에러 메시지
             console.log(error.response?.status); // 상태 코드
 
             console.log(`오류 내용 : ${error}`);
-            alert('상품 등록에 실패하였습니다.');
+            alert('상품 수정에 실패하였습니다.');
         }
     }
 

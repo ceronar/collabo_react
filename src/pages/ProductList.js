@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Button, Card, Col, Container, Modal, Row, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { API_BASE_URL } from "../config/config";
 import axios from "axios";
@@ -24,6 +24,8 @@ function App(props) {
     const [products, setProducts] = useState([]);
     const [show, setShow] = useState(false);                    // 모달 열림/닫힘 상태
     const [selectedItem, setSelectedItem] = useState(null);     // 선택된 상품
+
+    const navigate = useNavigate();
 
     // SpringBoot에 "상품 목록"을 요청
     useEffect(() => {
@@ -77,8 +79,9 @@ function App(props) {
                     size="sm"
                     onClick={(event) => {
                         event.stopPropagation();
-                        alert('수정');
-                    }}>
+                        navigate(`/product/update/${item.id}`);
+                    }}
+                >
                     수정
                 </Button>
                 &nbsp;
