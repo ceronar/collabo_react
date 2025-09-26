@@ -44,6 +44,7 @@ function App(props) {
     return(
         <Navbar bg="dark" variant="dark" expand="lg">
             <Container>
+                <Navbar.Brand href="#" onClick={() => navigate(-1)}><strong>&lt;&nbsp;</strong></Navbar.Brand>
                 <Navbar.Brand href='/'>{props.appName}</Navbar.Brand>
                 <Nav className="me-auto">
                     {/* 하이퍼링크 : Nav.Link는 다른 페이지로 이동할 때 사용됩니다.  */}
