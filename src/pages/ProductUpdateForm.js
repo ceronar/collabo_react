@@ -132,10 +132,11 @@ function App() {
         try {
             const url = `${API_BASE_URL}/product/update/${id}`;
             // 얕은 복사 : 두 변수가 같은 메모리 공간을 참조한다
+            // const parameters = {...product};
             const parameters = product;
+            
             // 깊은 복사 : 새로운 메모리에 같은 값을 복사한다
             // JSON.stringify()와 JSON.parse()를 사용
-            // const parameters = {...product};
 
             // Content-Type(Mime Type) : 문서의 종류가 어떠한 종류인지를 알려주는 항목
             // 예) 'text/html', 'image/jpeg', 'application/json' 등..
