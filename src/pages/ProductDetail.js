@@ -103,6 +103,43 @@ function App({ user }) {
         }
     }
 
+    // 사용자가 '주문하기' 버튼을 클릭
+    const buyNow = async () => {
+        if(quantity < 1) {
+            alert('수량을 1개 이상 선택해 주세요.');
+            return;
+        }
+
+        try {
+            const url = `${API_BASE_URL}/order`;
+
+            // 스프링 부트의 OrderDto, OrderItemDto 클래스와 연관이 있음
+            // 주의) parameters 작성 시 OrderDto의 변수 이름과 동일하게 작성
+            // 상세 보기 페이지에서는 무조건 1개의 상품만 주문 가능
+            const parameters = {
+                memberId:user.id,
+                status:'PENDING',
+                orderItems:[{
+                    productId:product.id,
+                    quantity:quantity
+                }]
+            };
+
+            console.log('주문할 데이터 정보');
+            console.log(parameters);
+
+            const response = await axios.post(url, parameters);
+            console.log(response.data);
+            alert(`${product.name} ${quantity}개를 주문하였습니다.`);
+
+            navigate('/product/list'); // 목록 페이지로 이동
+
+        } catch (error) {
+            console.log('주문 기능 실패');
+            console.log(error);
+        }
+    }
+
     return (
         <Container className="my-4">
             <Card>
@@ -183,8 +220,17 @@ function App({ user }) {
                                 >
                                     장바구니
                                 </Button>
-                                <Button variant="danger" className="me-3 px-4">
-                                    구매하기
+                                <Button variant="danger" className="me-3 px-4"
+                                    onClick={() => {
+                                        if (!user) {
+                                            alert('로그인이 필요한 서비스입니다.');
+                                            return navigate('/member/login');
+                                        } else {
+                                            buyNow();
+                                        }
+                                    }}
+                                >
+                                    주문하기
                                 </Button>
                             </div>
                         </Card.Body>

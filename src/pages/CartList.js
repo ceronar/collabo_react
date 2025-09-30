@@ -78,7 +78,7 @@ function App(props) {
     };
 
     // 개별 체크박스를 클릭함
-    const toggleCheckBox = (cartProductId) => {
+    const toggleCheckBox = async (cartProductId) => {
         console.log(`카트 상품 아이디 : ${cartProductId}`);
 
         setCartProducts((previous) => {
