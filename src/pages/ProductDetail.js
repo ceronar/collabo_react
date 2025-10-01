@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-function App({ user }) {
+function App(props) {
     const { id } = useParams(); // id 파라미터 챙기기
     const [product, setProduct] = useState(null); // 백엔드에서 넘어온 상품 정보
 
@@ -83,7 +83,7 @@ function App({ user }) {
             // Cart에 담을 내용은 `회원 아이디`, `상품 아이디`, `수량`입니다.
             // BackEnd 영역에서 CartProductDto 라는 클래스와 매치됩니다.
             const parameters = {
-                memberId: user.id,
+                memberId: props.user.id,
                 productId: product.id,
                 quantity: quantity
             };
@@ -117,7 +117,7 @@ function App({ user }) {
             // 주의) parameters 작성 시 OrderDto의 변수 이름과 동일하게 작성
             // 상세 보기 페이지에서는 무조건 1개의 상품만 주문 가능
             const parameters = {
-                memberId:user.id,
+                memberId:props.user.id,
                 status:'PENDING',
                 orderItems:[{
                     productId:product.id,
@@ -196,7 +196,7 @@ function App({ user }) {
                                         type="number"
                                         min="1"
                                         defaultValue={1}
-                                        disabled={!user}
+                                        disabled={!props.user}
                                         value={quantity}
                                         onChange={QuantityChange}
                                     />
@@ -210,7 +210,7 @@ function App({ user }) {
                                 </Button>
                                 <Button variant="success" className="me-3 px-4"
                                     onClick={() => {
-                                        if (!user) {
+                                        if (!props.user) {
                                             alert('로그인이 필요한 서비스입니다.');
                                             return navigate('/member/login');
                                         } else {
@@ -222,7 +222,7 @@ function App({ user }) {
                                 </Button>
                                 <Button variant="danger" className="me-3 px-4"
                                     onClick={() => {
-                                        if (!user) {
+                                        if (!props.user) {
                                             alert('로그인이 필요한 서비스입니다.');
                                             return navigate('/member/login');
                                         } else {
