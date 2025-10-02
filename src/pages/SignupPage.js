@@ -44,7 +44,7 @@ function App() {
 
             if(response.status === 200) { /* Spring의 MemberController 파일 Line.33 참조 */
                 alert('회원 가입 성공');
-                navigate('member/login');
+                navigate('/member/login');
             }
 
         } catch (error) { // error : 예외 객체

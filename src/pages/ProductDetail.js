@@ -71,7 +71,7 @@ function App(props) {
 
     // 사용자가 수량을 입력하고, '장바구니' 버튼을 눌렀습니다.
     const addToCart = async () => {
-        if (quantity < 1) {
+        if (quantity < 1 || isNaN(quantity)) {
             alert(`구매 수량은 1개 이상이어야 합니다.`);
             return;
         }
@@ -105,7 +105,7 @@ function App(props) {
 
     // 사용자가 '주문하기' 버튼을 클릭
     const buyNow = async () => {
-        if(quantity < 1) {
+        if(quantity < 1 || isNaN(quantity)) {
             alert('수량을 1개 이상 선택해 주세요.');
             return;
         }

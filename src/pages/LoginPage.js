@@ -98,7 +98,7 @@ function App(props) {
                                         </Button>
                                     </Col>
                                     <Col xs={4}>
-                                        <Link to={`/member/singup`} className="btn btn-outline-secondary w-100">
+                                        <Link to={`/member/signup`} className="btn btn-outline-secondary w-100">
                                             회원가입
                                         </Link>
                                     </Col>

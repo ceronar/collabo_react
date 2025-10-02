@@ -43,23 +43,60 @@ function App(props) {
 
     const navigate = useNavigate();
 
-    const deleteOrder = (deleteId) => {
-        alert(`삭제할 주문 번호 ${deleteId}`);
-    }
-
     // 관리자를 위한 컴포넌트, 함수
     const makeAdminButton = (bean) => {
-        if(props.user?.role !== "ADMIN") return null;
+        // if(props.user?.role !== "ADMIN" && props.user?.role !== "USER") return null;
+        if(props.user == null) return null;
+        // if (!["ADMIN", "USER"].includes(props.user?.role)) return null;
+
+        // 완료 버튼을 클릭시 'PENDING' -> 'COMPLETED' 변경
+        const changeStatus = async (newStatus) => {
+            try {
+                const url = `${API_BASE_URL}/order/update/status/${bean.orderId}?status=${newStatus}`;
+                await axios.put(url);
+
+                alert(`주문 번호 ${bean.orderId}번 상태가 ${newStatus}로 변경 되었습니다`);
+
+                // 'COMPLETED' 모드로 변경되고 나면 화면에서 삭제
+                // bean.orderId와 동일하지 않은 항목들만 다시 rendering
+                setOrders((previous) => previous.filter((order) => order.orderId !== bean.orderId));
+                
+            } catch (error) {
+                console.log(error);
+                alert('상태 변경(주문 완료)에 실패하였습니다.');
+            }
+        }
+
+        // 취소 버튼을 클릭시 주문 대기 상태인 주문 내역을 취소
+        const orderCancel = async () => {
+            try {
+                const url = `${API_BASE_URL}/order/delete/${bean.orderId}`;
+                await axios.delete(url);
+
+                alert(`주문 번호 ${bean.orderId}번이 취소 되었습니다`);
+
+                // bean.orderId와 동일하지 않은 항목들만 다시 rendering
+                setOrders((previous) => previous.filter((order) => order.orderId !== bean.orderId));
+                
+            } catch (error) {
+                console.log(error);
+                alert('주문 취소에 실패하였습니다.');
+            }
+        }
 
         return (
             <div>
-                <Button variant="warning" size="sm" className="me-2" 
-                    onClick={() => navigate(`/order/update/${bean.orderId}`)}>
-                    수정
+                {/* 완료 버튼은 관리자만 볼 수 있음 */}
+                {props.user?.role === 'ADMIN' && (
+                    <Button variant="success" size="sm" className="me-2" 
+                    onClick={() => changeStatus('COMPLETED')}>
+                    완료
                 </Button>
+                )}
                 <Button variant="danger" size="sm" className="me-2" 
-                    onClick={() => deleteOrder(bean.orderId)}>
-                    삭제
+                    onClick={() => orderCancel()}
+                >
+                    취소
                 </Button>
             </div>
         );
