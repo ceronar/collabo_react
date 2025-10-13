@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Button, Card, Col, Container, Modal, Pagination, Row, Table } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Pagination, Row, Table } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 
 import { API_BASE_URL } from "../config/config";
@@ -22,8 +22,8 @@ import axios from "axios";
 function App(props) {
     // Spring에서 넘겨 받은 상품 목록 State
     const [products, setProducts] = useState([]);
-    const [show, setShow] = useState(false);                    // 모달 열림/닫힘 상태
-    const [selectedItem, setSelectedItem] = useState(null);     // 선택된 상품
+    // const [show, setShow] = useState(false);                    // 모달 열림/닫힘 상태
+    // const [selectedItem, setSelectedItem] = useState(null);     // 선택된 상품
 
     // 페이징과 관련된 state 정의
     const [paging, setPaging] = useState({
@@ -35,6 +35,11 @@ function App(props) {
         beginPage : 0, // 페이징 시작 번호 
         endPage : 0, // 페이징 끝 번호
         pagingStatus : '', // "pageNumber/totalPages 페이지"
+        // 자바의 SearchDto 연관 필드(field)
+        searchDateType : 'all', // 기간 검색 콤보 박스
+        category : '', // 검색하고자 하는 특정 카테고리 콤보 박스
+        searchMode : '', // 상품 검색 모드 콤보 박스 | 상품이름(name) or 상품설명(description)
+        searchKeyword : '' // 검색 키워드 입력 상자
     });
 
     const navigate = useNavigate();
@@ -45,8 +50,13 @@ function App(props) {
         const parameters = {
             params : {
                 pageNumber : paging.pageNumber,
-                pageSize : paging.pageSize
-            }
+                pageSize : paging.pageSize,
+                searchDateType : paging.searchDateType,
+                category : paging.category,
+                searchMode : paging.searchMode,
+                searchKeyword : paging.searchKeyword
+            },
+            withCredntials: true
         };
 
         axios
@@ -86,8 +96,9 @@ function App(props) {
                 });
             })
             .catch((error) => {console.log(error)});
-    }, [paging.pageNumber]);
+    }, [paging.pageNumber, paging.searchDateType, paging.category, paging.searchMode, paging.searchKeyword]);
 
+    /* 
     const handleShow = (item) => {
         setSelectedItem(item);
         setShow(true);
@@ -97,6 +108,7 @@ function App(props) {
         setShow(false);
         setSelectedItem(null);
     };
+    */
 
     const handelDelete = async (id, name) => {
         const isDelete = window.confirm(`'${name}' 상품을 삭제 하시겠습니까?`);
@@ -161,6 +173,82 @@ function App(props) {
             </Link>
 
             {/* 필드 검색 영역 */}
+            <Form className="p-3">
+                <Row className="mb-3">
+                    {/* 검색 기간 선택 */}
+                    <Col md={2}>
+                        <Form.Select 
+                            name="searchDateType" 
+                            value={paging.searchDateType}
+                            onChange={(e) => setPaging((previous) => ({ ...previous, searchDateType:e.target.value }))} 
+                        >
+                            <option value='all'>전체 기간</option>
+                            <option value='1d'>1일</option>
+                            <option value='1w'>1주</option>
+                            <option value='1m'>1개월</option>
+                            <option value='6m'>6개월</option>
+                        </Form.Select>
+                    </Col>
+
+                    {/* 카테고리 선택 */}
+                    <Col md={2}>
+                        <Form.Select 
+                            name="category" 
+                            value={paging.category}
+                            onChange={(e) => setPaging((previous) => ({ ...previous, category:e.target.value }))} 
+                        >
+                            <option value='ALL'>카테고리 선택</option>
+                            <option value='BREAD'>빵</option>
+                            <option value='BEVERAGE'>음료수</option>
+                            <option value='CAKE'>케이크</option>
+                        </Form.Select>
+                    </Col>
+
+                    {/* 검색 모드 선택 */}
+                    <Col md={2}>
+                        <Form.Select 
+                            name="searchMode" 
+                            value={paging.searchMode}
+                            onChange={(e) => setPaging((previous) => ({ ...previous, searchMode:e.target.value }))} 
+                        >
+                            <option value='ALL'>검색 선택</option>
+                            <option value='name'>상품명</option>
+                            <option value='description'>상품 설명</option>
+                        </Form.Select>
+                    </Col>
+
+                    {/* 검색어 입력란 */}
+                    <Col md={4}>
+                        <Form.Control 
+                            name="searchKeyword"
+                            type="text"
+                            placeholder="검색어를 입력해 주세요."
+                            value={paging.searchKeyword}
+                            onChange={(e) => {
+                                e.preventDefault();
+                                setPaging((previous) => ({ ...previous, searchKeyword:e.target.value }));
+                            }}
+                        />
+                    </Col>
+
+                    {/* 페이징 상태 */}
+                    <Col md={2}>
+                        <Form.Control 
+                            as="input"
+                            type="text"
+                            value={paging.pagingStatus}
+                            disabled
+                            style={{
+                                fontSize: '18px',
+                                backgroundColor: '#f0f0f0',
+                                textAlign: 'center', // 텍스트 가운데 정렬
+                                width: '100%', // 필요한 너비 설정
+                                margin: '0 auto', // 가운데 정렬을 위한 자동 여백
+                            }}
+                        />
+                    </Col>
+                </Row>
+            </Form>
             
             {/* 상품 목록 자료 영역 */}
             <Row>
@@ -273,7 +361,7 @@ function App(props) {
             </Pagination>
 
 
-            {/* 모달 */}
+            {/* 모달 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                 <Modal.Title>{selectedItem?.name}</Modal.Title>
@@ -298,6 +386,7 @@ function App(props) {
                 <Button variant="secondary" onClick={handleClose}>닫기</Button>
                 </Modal.Footer>
             </Modal>
+            */}
         </Container>
     );
 }
