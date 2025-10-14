@@ -353,7 +353,7 @@ function App(props) {
                         console.log(`Last 버튼 클릭(${gotoPage}페이지 이동)`);
                         setPaging((previous)=>({...previous, pageNumber:gotoPage}));
                     }}
-                    disabled={paging.pageNumber === (paging.totalPages - 1)}
+                    disabled={(paging.pageNumber === (paging.totalPages - 1))||(paging.totalPages <= 1)}
                     as="button"
                 >
                     마지막
