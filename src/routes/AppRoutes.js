@@ -28,10 +28,10 @@ function App(props) {
 
             {/* 로그인 여부에 따라서 상품 목록 페이지가 다르게 보여야 하므로, user 프롭스를 넘겨 줍니다. */}
             <Route path='/product/list' element={<ProductList user={props.user} />} />
-            <Route path='/product/insert' element={<ProductInsertForm />} />
+            <Route path='/product/insert' element={<ProductInsertForm user={props.user} />} />
 
             {/* 기호 ":id"는 변수처럼 동작하는 매개 변수이고, ProductUpdateForm.js 파일에서 참조합니다. */}
-            <Route path='/product/update/:id' element={<ProductUpdateForm />} />
+            <Route path='/product/update/:id' element={<ProductUpdateForm user={props.user} />} />
 
             {/* 미로그인시 `장바구니`와 `구매하기` 기능은 선택이 불가능해야 하므로, user를 프롭스로 넘겨 줍니다. */}
             <Route path='/product/detail/:id' element={<ProductDetail user={props.user} />} />

@@ -54,7 +54,7 @@ import { useParams } from "react-router-dom";
  *      과거에 업로드 했던 이전 이미지즐 삭제하여야 함
  */
 
-function App() {
+function App(props) {
     const {id} = useParams();
     console.log(`수정할 상품 번호 : ${id}`);
 
@@ -71,9 +71,14 @@ function App() {
 
     // id를 이용하여 기존에 입력한 상품 정보 가져오기
     useEffect(() => {
+            if (!props.user || props.user?.role !== 'ADMIN') {
+            // 어드민이 아니면 → 홈으로 리다이렉트
+            alert(`${comment} 기능은 관리자만 접근이 가능합니다.`);
+            return <Navigate to="/" replace />;
+        }
         const url = `${API_BASE_URL}/product/update/${id}`;
         axios
-            .get(url)
+            .get(url, { withCredentials: true })
             .then((response) => {
                 setProduct(response.data);
             })
@@ -83,10 +88,7 @@ function App() {
             });
     }, [id]);
 
-    if (user?.role !== 'ADMIN') {
-        // 어드민이 아니면 → 홈으로 리다이렉트
-        return <Navigate to="/" replace />;
-    }
+    
 
     // 폼 양식에서 어떤 컨트롤의 값이 변경됨
     const ControlChange = (event) => {
@@ -173,7 +175,7 @@ function App() {
                         type="text"
                         placeholder="이름을(를) 입력해 주세요."
                         name="name"
-                        value={product.name}
+                        value={product.name || ''}
                         onChange={ControlChange}
                         required
                     />
@@ -184,7 +186,7 @@ function App() {
                         type="text"
                         placeholder="가격을(를) 입력해 주세요."
                         name="price"
-                        value={product.price}
+                        value={product.price || ''}
                         onChange={ControlChange}
                         required
                     />
@@ -194,7 +196,7 @@ function App() {
                     <Form.Label>카테고리</Form.Label>
                     <Form.Select 
                         name="category"
-                        value={product.category}
+                        value={product.category || ''}
                         onChange={ControlChange}
                         required>
                         {/* 주의) Enum 열거형 타입에서 사용한 대문자를 반드시 사용 */}
@@ -211,7 +213,7 @@ function App() {
                         type="text"
                         placeholder="재고을(를) 입력해 주세요."
                         name="stock"
-                        value={product.stock}
+                        value={product.stock || ''}
                         onChange={ControlChange}
                         required
                     />
@@ -234,7 +236,7 @@ function App() {
                         type="text"
                         placeholder="상품 설명을(를) 입력해 주세요."
                         name="description"
-                        value={product.description}
+                        value={product.description || ''}
                         onChange={ControlChange}
                         required
                     />

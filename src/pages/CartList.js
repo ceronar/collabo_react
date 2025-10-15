@@ -32,7 +32,7 @@ function App(props) {
     const fetchCartProducts = async () => {
         try {
             const url = `${API_BASE_URL}/cart/list/${props.user.id}`;
-            const response = await axios.get(url);
+            const response = await axios.get(url, { withCredentials: true });
             console.log('상품 카트 조회 결과');
             console.log(response.data);
 
@@ -115,7 +115,7 @@ function App(props) {
 
             // patch 동작은 전체가 아닌 일부 데이터를 변경하고자 할 때 사용
             // Spring의 WebConfig 클래스 안의 addCorsMappings() 메소드를 참조
-            const response = await axios.patch(url);
+            const response = await axios.patch(url, { withCredentials: true });
 
             console.log(response.data || '');
 

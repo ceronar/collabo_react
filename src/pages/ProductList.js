@@ -120,7 +120,7 @@ function App(props) {
         
         try { // 상품 삭제 후 다시 상품 목록 페이지
             // 주의) 상품을 삭제하려면 반드시 primary key 인 상품의 아이디를 넘겨주어야 함
-            await axios.delete(`${API_BASE_URL}/product/delete/${id}`);
+            await axios.delete(`${API_BASE_URL}/product/delete/${id}`, { withCredentials: true });
             alert(`'${name}' 상품 삭제 되었습니다.`);
             // state에서 바로 제거 (리렌더링 발생)
             setProducts((prevProducts) => prevProducts.filter((p) => p.id !== id));

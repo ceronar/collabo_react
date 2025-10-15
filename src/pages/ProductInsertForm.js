@@ -30,7 +30,7 @@ import { API_BASE_URL } from "../config/config";
  *      상품 목록 1페이지의 첫번째 이미지가 올린 이미지
  */
 
-function App() {
+function App(props) {
     const comment = '상품 등록';
     const nevigate = useNavigate();
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -40,8 +40,9 @@ function App() {
 
     // product는 백엔드에게 넘겨 줄 상품 등록 정보를 담고 있는 객체
     const [product, setProduct] = useState(initial_value);
-    if (user?.role !== 'ADMIN') {
+    if (!props.user || props.user?.role !== 'ADMIN') {
         // 어드민이 아니면 → 홈으로 리다이렉트
+        alert(`${comment} 기능은 관리자만 접근이 가능합니다.`);
         return <Navigate to="/" replace />;
     }
 
